@@ -6,7 +6,6 @@ import static webroller.TestConstants.TEST_ROOM;
 import org.junit.Test;
 
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -27,9 +26,9 @@ public class RoomListingHandlerTest extends AbstractVertxTestCase {
 	@Test
 	public void returnsPublicRoom(TestContext testContext) {
 		roomDirectory.addRoom(TEST_ROOM);
-		HttpClientRequest request = client.get(launcher.getPort(), "localhost", "/rooms");
+		
 		Async async = testContext.async();
-		request.handler(response -> {
+		client.get(launcher.getPort(), "localhost", "/rooms", response -> {
 			testContext.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
 				JsonObject json = buffer.toJsonObject();
@@ -37,16 +36,15 @@ public class RoomListingHandlerTest extends AbstractVertxTestCase {
 				testContext.assertEquals(1, rooms.size());
 			});
 			async.complete();
-		});
-		request.end();
+		}).end();;
 	}
 	
 	@Test
 	public void omitsSecretRoom(TestContext testContext) {
 		roomDirectory.addRoom(SECRET_TEST_ROOM);
-		HttpClientRequest request = client.get(launcher.getPort(), "localhost", "/rooms");
+		
 		Async async = testContext.async();
-		request.handler(response -> {
+		client.get(launcher.getPort(), "localhost", "/rooms", response -> {
 			testContext.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
 				JsonObject json = buffer.toJsonObject();
@@ -54,8 +52,7 @@ public class RoomListingHandlerTest extends AbstractVertxTestCase {
 				testContext.assertEquals(0, rooms.size());
 			});
 			async.complete();
-		});
-		request.end();
+		}).end();
 	}
 
 }

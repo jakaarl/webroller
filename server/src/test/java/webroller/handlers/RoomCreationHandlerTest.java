@@ -5,7 +5,6 @@ import static webroller.TestConstants.TEST_ROOM;
 
 import org.junit.Test;
 
-import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -20,21 +19,18 @@ public class RoomCreationHandlerTest extends AbstractVertxTestCase {
 	public void createsRoom(TestContext testContext) {
 		JsonObject json = new JsonObject();
 		json.put("room", JsonConverter.json(TEST_ROOM));
-		String body = json.encode();
-		HttpClientRequest request = client
-				.post(launcher.getPort(), "localhost", "/rooms")
-				.putHeader(HttpHeaders.ACCEPT, JSON_CONTENT_TYPE)
-				.putHeader(HttpHeaders.CONTENT_TYPE, JSON_CONTENT_TYPE)
-				.putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(body.length()));
+		
 		Async async = testContext.async();
-		request.handler(response -> {
+		client.post(launcher.getPort(), "localhost", "/rooms", response -> {
 			testContext.assertEquals(200, response.statusCode());
 			response.bodyHandler(buffer -> {
 				Room created = JsonConverter.room(buffer.toJsonObject());
 				testContext.assertEquals(TEST_ROOM.name, created.name);
 			});
 			async.complete();
-		}).write(body);
-		request.end();
+		})
+		.putHeader(HttpHeaders.ACCEPT, JSON_CONTENT_TYPE)
+		.putHeader(HttpHeaders.CONTENT_TYPE, JSON_CONTENT_TYPE)
+		.end(json.encode());
 	}
 }
