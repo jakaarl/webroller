@@ -14,7 +14,7 @@ public class RoomDirectory {
 	private final int maxRoomsAllowed;
 	private final Map<String, Room> rooms;
 	
-	protected RoomDirectory() {
+	public RoomDirectory() {
 		this(MAX_ROOMS_ALLOWED);
 	}
 	
@@ -44,6 +44,13 @@ public class RoomDirectory {
 			throw new IllegalStateException("Maximum number of rooms reached");
 		}
 		rooms.put(room.key, room);
+	}
+	
+	public void removeRoom(Room room) {
+		if (!rooms.containsKey(room.key)) {
+			throw new IllegalArgumentException("No room by key: " + room.key);
+		}
+		rooms.remove(room.key);
 	}
 
 }

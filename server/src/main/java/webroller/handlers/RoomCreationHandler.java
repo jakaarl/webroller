@@ -14,17 +14,17 @@ public class RoomCreationHandler implements Handler<RoutingContext> {
 	@Override
 	public void handle(RoutingContext context) {
 		JsonObject json = context.getBodyAsJson();
-		JsonObject userJson = json.getJsonObject("user");
 		JsonObject roomJson = json.getJsonObject("room");
+		JsonObject adminJson = roomJson.getJsonObject("admin");
 		Room room = new Room(
 				roomJson.getString("name"),
 				roomJson.getString("description"),
 				roomJson.getBoolean("secret", false),
-				new User(userJson.getString("nick"), userJson.getString("name")));
+				new User(adminJson.getString("nick"), adminJson.getString("name")));
 		Context vertxContext = context.vertx().getOrCreateContext();
 		RoomDirectory directory = vertxContext.get(RoomDirectory.CONTEXT_KEY);
 		directory.addRoom(room);
-		context.response().end(JsonConverter.toJson(room).encode());
+		context.response().end(JsonConverter.json(room).encode());
 	}
 
 }

@@ -3,7 +3,8 @@ package webroller;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static webroller.TestConstants.ADMIN_USER;
+import static webroller.TestConstants.SECRET_TEST_ROOM;
+import static webroller.TestConstants.TEST_ROOM;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,16 +18,14 @@ public class RoomDirectoryTest {
 	@Test
 	public void publicRoomsExcludesSecretRooms() {
 		RoomDirectory directory = new RoomDirectory();
-		Room room = new Room("test", "test", true, ADMIN_USER);
-		directory.addRoom(room);
-		assertFalse(directory.publicRooms().contains(room));
+		directory.addRoom(SECRET_TEST_ROOM);
+		assertFalse(directory.publicRooms().contains(SECRET_TEST_ROOM));
 	}
 	
 	public void publicRoomsIncludesNonSecretRooms() {
 		RoomDirectory directory = new RoomDirectory();
-		Room room = new Room("test", "test", false, ADMIN_USER);
-		directory.addRoom(room);
-		assertTrue(directory.publicRooms().contains(room));
+		directory.addRoom(TEST_ROOM);
+		assertTrue(directory.publicRooms().contains(TEST_ROOM));
 	}
 	
 	@Test
@@ -40,10 +39,17 @@ public class RoomDirectoryTest {
 	@Test
 	public void addRoomThrowsWhenMaximumReached() {
 		RoomDirectory directory = new RoomDirectory(0);
-		Room room = new Room("test", "test", true, ADMIN_USER);
 		thrown.expect(IllegalStateException.class);
 		thrown.expectMessage("Maximum number of rooms reached");
-		directory.addRoom(room);
+		directory.addRoom(TEST_ROOM);
+	}
+	
+	@Test
+	public void removeRoomThrowsWhenNoSuchRoom() {
+		RoomDirectory directory = new RoomDirectory();
+		thrown.expect(IllegalArgumentException.class);
+		thrown.expectMessage("No room by key");
+		directory.removeRoom(TEST_ROOM);
 	}
 
 }

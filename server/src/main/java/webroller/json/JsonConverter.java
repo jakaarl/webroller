@@ -8,42 +8,42 @@ import webroller.User;
 
 public class JsonConverter {
 	
-	public static JsonObject toJson(Room room) {
+	public static JsonObject json(Room room) {
 		JsonObject json = new JsonObject();
 		json.put("name", room.name);
 		json.put("description", room.description);
 		json.put("userCount", room.getUsers().size() + 1); // +1 because there's always an admin
-		json.put("admin", toJson(room.getAdmin()));
+		json.put("admin", json(room.getAdmin()));
 		return json;
 	}
 	
-	public static JsonObject toJson(RoomDirectory roomDirectory) {
+	public static JsonObject json(RoomDirectory roomDirectory) {
 		JsonObject json = new JsonObject();
 		JsonArray rooms = new JsonArray();
 		for (Room room : roomDirectory.publicRooms()) {
-			rooms.add(toJson(room));
+			rooms.add(json(room));
 		}
 		json.put("rooms", rooms);
 		return json;
 	}
 	
-	public static JsonObject toJson(User user) {
+	public static JsonObject json(User user) {
 		JsonObject json = new JsonObject();
 		json.put("nick", user.nick);
 		json.put("name", user.fullName);
 		return json;
 	}
 	
-	public static User fromJson(JsonObject userJson) {
+	public static User user(JsonObject userJson) {
 		return new User(userJson.getString("nick"), userJson.getString("name"));
 	}
 	
-	public static Room fromJson(JsonObject roomJson, JsonObject adminJson) {
-		User admin = fromJson(adminJson);
+	public static Room room(JsonObject roomJson) {
+		User admin = user(roomJson.getJsonObject("admin"));
 		return new Room(
 				roomJson.getString("name"),
 				roomJson.getString("description"),
-				roomJson.getBoolean("secret", false),
+				roomJson.getBoolean("secret"),
 				admin);
 	}
 

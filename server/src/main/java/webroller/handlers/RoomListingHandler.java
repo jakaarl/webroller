@@ -13,8 +13,7 @@ public class RoomListingHandler implements Handler<RoutingContext> {
 	public void handle(RoutingContext context) {
 		Context vertxContext = context.vertx().getOrCreateContext();
 		RoomDirectory directory = vertxContext.get(RoomDirectory.CONTEXT_KEY);
-		JsonObject listing = JsonConverter.toJson(directory);
-		//context.response().putHeader("content-type", "application/json");
+		JsonObject listing = JsonConverter.json(directory);
 		context.response().end(listing.encode());
 	}
 	
